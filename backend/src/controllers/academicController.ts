@@ -120,8 +120,8 @@ export const createSubject = async (req: AuthRequest, res: Response): Promise<vo
     
     if (lecturerId) {
       const lecturer = await User.findById(lecturerId);
-      if (!lecturer || lecturer.role !== 'staff') {
-        res.status(400).json({ message: 'Assigned Lecturer must be a valid staff member' });
+      if (!lecturer || !['staff', 'lecturer'].includes(lecturer.role)) {
+        res.status(400).json({ message: 'Assigned Lecturer must be a valid staff or lecturer member' });
         return;
       }
     }
@@ -194,8 +194,8 @@ export const updateSubject = async (req: AuthRequest, res: Response): Promise<vo
     const { lecturerId } = req.body;
     if (lecturerId) {
       const lecturer = await User.findById(lecturerId);
-      if (!lecturer || lecturer.role !== 'staff') {
-        res.status(400).json({ message: 'Assigned Lecturer must be a valid staff member' });
+      if (!lecturer || !['staff', 'lecturer'].includes(lecturer.role)) {
+        res.status(400).json({ message: 'Assigned Lecturer must be a valid staff or lecturer member' });
         return;
       }
     }

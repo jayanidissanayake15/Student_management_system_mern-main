@@ -25,10 +25,10 @@ const generateTokens = (userId: string) => {
 export const seedDefaultAdmin = async (): Promise<void> => {
   try {
     const adminExists = await User.findOne({ email: 'admin@lms.com' });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash('Admin@1234', salt);
+    
     if (!adminExists) {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash('Admin@123', salt);
-      
       const admin = await User.create({
         firstName: 'System',
         lastName: 'Admin',
@@ -40,7 +40,11 @@ export const seedDefaultAdmin = async (): Promise<void> => {
         isFirstLogin: true,
       });
 
-      console.log('Seeded default admin user: admin@lms.com / Admin@123');
+      console.log('Seeded default admin user: admin@lms.com / Admin@1234');
+    } else {
+      adminExists.password = hashedPassword;
+      await adminExists.save();
+      console.log('Updated existing default admin user password to Admin@1234');
     }
   } catch (err) {
     console.error('Failed to seed default admin:', err);
